@@ -39,7 +39,7 @@ Sending a text message to one person
 [>] Message: anything
 ```
 
-Sending email to multiple recipents:
+Sending text messages to multiple recipents:
 
 ```
 [>] To: /rcps_many
