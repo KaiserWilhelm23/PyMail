@@ -29,7 +29,7 @@ To: end
 [>] Message: anything
 ```
 
-# usage [sending sms messages]
+# Usage [sending sms messages]
 
 Sending a text message to one person
 
