@@ -1,10 +1,18 @@
 # PyMail
-A python program written with smtplib to send emails.
+A python program written with smtplib to send emails and use the sms-gateway
 
 # Requirments
 - Python 3.6 or higher
 - smtplib
 - sys
+- phonenumbers
+
+to get phonenumbers on windows:
+``` pip install phonenumbers```
+
+to get phonenumbers on linux distros:
+``` pip3 install phonenumbers```
+
 
 NOTE: All modules come with python
 
@@ -49,4 +57,27 @@ To: number3@domain.com
 To: end
 [>] Subject:anything
 [>] Message: anything
+```
+Help commands:
+```
+    /help {shows this message}
+    
+    /exit {exits the client}
+    
+    /info syscode {get system codes}
+    
+    /info [Error] {get info on Errors}
+    
+    /rcps_many {send email to multiple recpients run when '[>] To:' appears.} (optioanl)
+    
+    /sms {prints list of sms adresses}
+    
+    /test {tests all connections}
+    
+    /info num {searches the provider of a number and its location}
+    
+    /encode {run this when you see 'Message: '}
+    
+    /decode {run in main console. decode any message in a Base64 format}
+    
 ```
