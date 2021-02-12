@@ -1,5 +1,14 @@
+
 import smtplib
 import sys
+import phonenumbers 
+from phonenumbers import geocoder 
+import requests
+import json
+import base64
+
+
+
 
 apple = 'smtp.mail.me.com'
 gmail = 'smtp.gmail.com'
@@ -14,10 +23,24 @@ help = '''
   /[command]:
     
     /help {shows this message}
+    
     /exit {exits the client}
+    
     /info syscode {get system codes}
+    
     /info [Error] {get info on Errors}
+    
     /rcps_many {send email to multiple recpients run when '[>] To:' appears.} (optioanl)
+    
+    /sms {prints list of sms adresses}
+    
+    /test {tests all connections}
+    
+    /info num {searches the provider of a number and its location}
+    
+    /encode {run this when you see 'Message: '}
+    
+    /decode {run in main console. decode any message in a Base64 format}
     
     
   [==============================]
@@ -53,12 +76,116 @@ print('''[*]
     [3] yahoo 
     
   [==============================]
+  
   ''')
   
   
   
+sms = """
+List of SMS GateWay adresses:
+
+  AT&T: number@txt.att.net (SMS), number@mms.att.net (MMS)
+
+  Boost Mobile: number@sms.myboostmobile.com (SMS), number@myboostmobile.com (MMS)
+
+  C-Spire: number@cspire1.com
+
+  Consumer Cellular: number@mailmymobile.net
+
+  Cricket: number@sms.cricketwireless.net (SMS), number@mms.cricketwireless.net (MMS)
+
+  Google Fi (Project Fi): number@msg.fi.google.com (SMS & MMS)
+
+  Metro PCS: number@mymetropcs.com (SMS & MMS)
+
+  Mint Mobile: number@mailmymobile.net (SMS)
+
+  Page Plus: number@vtext.com (SMS), number@mypixmessages.com (MMS)
+
+  Red Pocket: Red Pocket uses AT&T or T-Mobile (for GSM SIMs) & Verizon for CDMA. See info. for those carriers.
+
+  Republic Wireless: number@text.republicwireless.com (SMS)
+
+  Simple Mobile: number@smtext.com (SMS)
+
+  Sprint: number@messaging.sprintpcs.com (SMS), number@pm.sprint.com (MMS)
+
+  T-Mobile: number@tmomail.net (SMS & MMS)
+
+  Ting: number@message.ting.com (SMS for CDMA), number@tmomail.net (SMS for GSM)
+
+  Tracfone: number@mmst5.tracfone.com (MMS)
+
+  U.S. Cellular: number@email.uscc.net (SMS), number@mms.uscc.net (MMS)
+
+  Verizon: number@vtext.com (SMS), number@vzwpix.com (MMS)
+
+  Virgin Mobile: number@vmobl.com (SMS), number@vmpix.com (MMS)
+
+  Xfinity Mobile: number@vtext.com (SMS), number@mypixmessages.com (MMS)
+
+"""
+  
+  
 
   
+  
+  
+  
+  
+def test():
+  try:
+    s = smtplib.SMTP(apple,port)
+    s.starttls()
+    
+    s1 = smtplib.SMTP(gmail, port)
+    s1.starttls()
+    
+    s2 = smtplib.SMTP(yahoo, port)
+    s2.starttls()
+    print('[*] Connections Made Successfuly.')
+    
+  except Exception as e:
+    print(e)
+    
+    
+def getCarrier(number):
+  try:
+    url = 'https://api.telnyx.com/v1/phone_number/1' + number
+    html = requests.get(url).text
+    data = json.loads(html)
+    data = data["carrier"]
+    carrier = data["name"]
+    return carrier
+  except Exception as e:
+    print(e)
+
+  
+def number_search():
+  try:
+    id = input('[>] Country Code: ')
+    phone_number1 = input('[>] Phone number: ')
+    plus = '+'
+    g = plus+id+phone_number1
+    print('[==================================]')
+    print('[*] '+ getCarrier(phone_number1))
+    phone_number = phonenumbers.parse(g)  
+    print('[*] ' + geocoder.description_for_number(phone_number, 'en'))    
+    print('[==================================]')
+  except Exception as e:
+    print(e)
+    print('[==================================]')
+    
+def decode(arg):
+  decode_data = base64.b64decode(arg)
+  return decode_data
+    
+def encrypt(arg):
+  message_bytes = arg.encode('ascii')
+  base64_bytes = base64.b64encode(message_bytes)
+  base64_message = base64_bytes.decode('ascii')
+  return base64_bytes
+    
   
 def emailchoose():
     
@@ -120,9 +247,7 @@ def emailchoose():
           
         sub = input('[>] Subject:')
         mssg = input('[>] Message: ')
-      
-        mssg = 'Subject: {}\n\n{}'.format(sub, mssg)
-      
+        
         if mssg == '/exit':
           print('[*E] Gmail Client has been killed')
           print('[=====================================]')
@@ -132,6 +257,16 @@ def emailchoose():
           print('[*E] pymail Client has been killed')
           print('[=====================================]')
           sys.exit()
+          
+        elif mssg == '/encrypt':
+          user = input('[>] Message To Encrypt: ')
+          f = encrypt(user)
+          mssg = f
+          print(f)
+      
+        mssg = 'Subject: {}\n\n{}'.format(sub, mssg)
+      
+        
     
         server.sendmail(username, to, mssg)
         print(f'[*1 -S] {username} has sent a message to: {to}')
@@ -198,17 +333,25 @@ def emailchoose():
       
       mssg = input('[>] Message: ')
       
-      mssg = 'Subject: {}\n\n{}'.format(sub, mssg)
-      
       if mssg == '/exit':
-        print('[*E] Gmail Client has been killed')
-        print('[=====================================]')
-        emailchoose()
+          print('[*E] Gmail Client has been killed')
+          print('[=====================================]')
+          emailchoose()
         
       elif mssg == '/exit all':
         print('[*E] pymail Client has been killed')
         print('[=====================================]')
         sys.exit()
+          
+      elif mssg == '/encrypt':
+        user = input('[>] Message To Encrypt: ')
+        f = encrypt(user)
+        mssg = f
+        print(f)
+      
+      mssg = 'Subject: {}\n\n{}'.format(sub, mssg)
+      
+      
     
       server1.sendmail(username, to, mssg)
       print(f'[*1 -S] {username} has sent a message to: {to}')
@@ -230,7 +373,7 @@ def emailchoose():
           print('[=====================================]')
           sys.exit()
       
-      username = username+'@icloud.com'
+      username = username+'@yahoo.com'
       password = input('[>] Password: ')
       try:
         server1.login(username, password)
@@ -273,17 +416,24 @@ def emailchoose():
       
       mssg = input('[>] Message: ')
       
-      mssg = 'Subject: {}\n\n{}'.format(sub, mssg)
-      
       if mssg == '/exit':
-        print('[*E] Yahoo Client has been killed')
-        print('[=====================================]')
-        emailchoose()
+          print('[*E] Gmail Client has been killed')
+          print('[=====================================]')
+          emailchoose()
         
       elif mssg == '/exit all':
         print('[*E] pymail Client has been killed')
         print('[=====================================]')
         sys.exit()
+          
+      elif mssg == '/encrypt':
+        user = input('[>] Message To Encrypt: ')   
+        f = encrypt(user)
+        mssg = f
+        print(f)
+      
+      mssg = 'Subject: {}\n\n{}'.format(sub, mssg)
+      
     
       server1.sendmail(username, to, mssg)
       print(f'[*1 -S] {username} has sent a message to: {to}')
@@ -360,6 +510,24 @@ def emailchoose():
       
     elif client == "/info pymail":
       print(pymail)
+      emailchoose()
+      
+    elif client == '/sms':
+      print(sms)
+      emailchoose()
+    
+    elif client == '/test':
+      test()
+      emailchoose()
+      
+    elif client == '/info num':
+      number_search()
+      emailchoose()
+      
+    elif client == '/decode':
+      user = input('[>] Decode Message: ')
+      f = decode(user)
+      print(f'[*] Decrpted Message: {f}')
       emailchoose()
   
   
