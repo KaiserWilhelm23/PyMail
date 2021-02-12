@@ -14,7 +14,7 @@ to get phonenumbers on linux distros:
 ``` pip3 install phonenumbers```
 
 
-NOTE: All modules come with python
+NOTE: All modules come with python except "phonenumbers"
 
 # Usage [sending emails]
 Sending a email to one person
