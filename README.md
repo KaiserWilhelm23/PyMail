@@ -58,7 +58,7 @@ To: end
 [>] Subject:anything
 [>] Message: anything
 ```
-Help commands:
+# Help commands:
 ```
     /help {shows this message}
     
